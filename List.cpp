@@ -55,13 +55,5 @@ int List<Type>::List_Insert(const Type & v){
 		k->Set_next(this->head);
 	}
 	this->head = k;
+	return 0;
 };
-
-/*int main(void){
-	List<int> x;
-	x.List_Insert(1);
-	x.List_Insert(2);
-	x.List_Insert(4);
-	x.print();
-	cout << "ALL OK!" << endl;
-}*/

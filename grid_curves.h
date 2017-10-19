@@ -6,11 +6,12 @@
 
 using namespace std;
 
+template <typaname T>
 class Grid_curve{
 private:
-	std::vector<double *> grid_curve;
+	std::vector<Τ> grid_curve;
 public:
-	Grid_curve(std::vector<double *> v);
+	Grid_curve(const std::vector<T> &,int,int);
 	~Grid_curve();
 };
 

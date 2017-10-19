@@ -1,9 +1,7 @@
 #include "grid_curves.h"
 
-Grid_curve::Grid_curve(std::vector<double *> v){
-	cout << "Hello World" << endl;
-}
+template <typename T>
+Grid_curve::Grid_curve(const std::vector<T> &,int,int);
 
-Grid_curve::~Grid_curve(){
-	cout << "Bye world!" << endl;
-}
+template <typename T>
+Grid_curve::~Grid_curve();

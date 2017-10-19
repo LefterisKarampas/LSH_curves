@@ -1,29 +1,55 @@
 #include "HashTable.h"
 #include "List.h"
 #include <iostream>
-#include <vector>
 
 using namespace std;
 
-
-int hash1(const std::vector<double> & x){
-	return 0;
+template <typename Type>
+Bucket<Type>::Bucket(){
+	this->list = NULL;
+	//cout << "Bucket created!" << endl;
+}
+template <typename Type>
+Bucket<Type>::~Bucket(){
+	if(this->list != NULL){
+		delete this->list;
+	}
+}
+template <typename Type>
+int Bucket<Type>::Bucket_Insert(const Type & x){
+	if(list == NULL){
+		this->list = new List<Type>();
+	}
+	return this->list->List_Insert(x);
+	//this->list->print();
 }
 
-int hash2 (const std::vector<double> & x){
-	return 0;
+template <typename Type>
+HashTable<Type>::HashTable(const int k_vect,const int n,int(*hash_function)(const Type &,int)):k_vec(k_vect),buckets(n),Hash_Function(hash_function){
+	this->T = new Bucket<Type>*[n];
+	for(int i=0;i<n;i++){
+		this->T[i] = new Bucket<Type>();
+	}
 }
 
+template <typename Type>
+HashTable<Type>::~HashTable(){
+	for(int i=0;i<this->buckets;i++){
+		delete this->T[i];
+	}
+	delete[] this->T;
+}
+template <typename Type>
+int HashTable<Type>::Hash(const Type & x){
+	return (*this->Hash_Function)(x,this->buckets);
+}
 
-
-int main(void){
-	HashTable< std::vector<double> > h1(5,&hash1);
-	std::vector<double> v = std::vector<double>();
-	v.push_back(2.3);
-	v.push_back(3.3);
-	h1.Hash(v);
-	h1.Hash_Insert(v);
-	HashTable< std::vector<double> > h2(5,&hash2);
-	h2.Hash(v);
-	return 0;
+template <typename Type>
+int HashTable<Type>::Hash_Insert(const Type & x){
+	int bucket = this->Hash(x);
+	if(bucket >= this->buckets){
+		cerr << "Fail hash function: Index = " << bucket << endl;
+		return -1;
+	}
+	return this->T[bucket]->Bucket_Insert(x);
 }
