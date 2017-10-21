@@ -6,12 +6,13 @@ using namespace std;
 
 //Node Functions
 template<typename Type>
-Node<Type>::Node(const Type & x):value(x){
+Node<Type>::Node(Type * x):value(x){
 	this->next = NULL;
 };
 
 template<typename Type>
 Node<Type>::~Node(){
+	delete this->value;
 	if(this->next != NULL){
 		delete this->next;
 	}
@@ -29,7 +30,7 @@ Node<Type> * Node<Type>::GetNext(){
 };
 
 template <typename Type>
-Type Node<Type>::GetValue(){
+Type * Node<Type>::GetValue(){
 	return this->value;
 };
 
@@ -49,11 +50,31 @@ List<Type>::~List(){
 }
 
 template<typename Type>
-int List<Type>::List_Insert(const Type & v){
+int List<Type>::List_Insert(Type * v){
 	Node<Type> *k = new Node<Type>(v);
 	if(this->head != NULL){
 		k->Set_next(this->head);
 	}
 	this->head = k;
 	return 0;
+};
+
+
+template<typename Type>
+Type * List<Type>::List_Search(Type * v){
+	Node<Type> * temp;
+	if(this->head != NULL){
+		temp = this->head;
+	}
+	else{
+		return NULL;
+	}
+	while(temp){
+		Type *x = temp->GetValue();
+		if(x->Compare_GridCurve(v)){
+			return x;
+		}
+		temp = temp->GetNext();
+	}
+	return NULL;
 };

@@ -4,26 +4,34 @@
 
 using namespace std;
 
-template <typename T>
-Grid<T>::Grid(int d,int m){
+template <typename T,typename N>
+Grid<T,N>::Grid(int d,int m){
 	for(int i=0;i<d;i++){
-		this->t.push_back(0.1*i);
+		double x;
+		do{
+			x = randn(0,1)*d;
+		}while(x)
 	}
 	this->delta = 1;
 }
 
 
-template <typename T>
-Grid<T>::~Grid(){
+template <typename T,typename N>
+Grid<T,N>::~Grid(){
 	;
 }
 
-template <typename T>
-std::vector<T> Grid<T>::Create_GridCurve(const std::vector<T> & v){
-	std::vector<T> vec;
-	for(int i=0;i<v.size();i++){
-		T temp = (int)(v[i]+0.5)/this->delta - this->t[i];
-		vec.push_back(temp);
+template <typename T,typename N>
+N * Grid<T,N>::Create_GridCurve(const T & v){
+	N *vec = new N();
+	double prev;
+	for(int k=0;k<v.size();k++){
+		for(int i=0;i<v[k].size();i++){
+			double temp = (int)(((v[k])[i]+0.5)/this->delta) - this->t[i];
+			if(i == 0 || prev != temp)
+				vec->push_back(temp);
+			prev = temp;
+		}
 	}
 	return vec;
 }

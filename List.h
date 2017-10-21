@@ -8,14 +8,14 @@ using namespace std;
 
 template <typename Type>
 class Node{
-	Type value;
+	Type * value;
 	Node<Type> * next;
 public:
-	Node(const Type & x);
+	Node(Type * x);
 	~Node();
 	int Set_next(Node<Type> * next);
 	Node<Type> * GetNext();
-	Type GetValue();
+	Type * GetValue();
 
 	void print(){
 		cout << "-> " << this->value << " ";
@@ -33,7 +33,8 @@ class List{
 public:
 	List();
 	~List();
-	int List_Insert(const Type &);
+	int List_Insert(Type *);
+	Type * List_Search(Type *);
 	void print(){
 		Node<Type> * temp;
 		temp = this->head;

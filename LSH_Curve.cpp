@@ -3,19 +3,20 @@
 #include "Grid.cpp"
 #include "HashFunctions.h"
 #include "HashTable.cpp"
+#include "Curve.h"
 
-template <typename T,typename N>
-LSH_Curve<T,N>::LSH_Curve(int k,int dim,int k_vec,int num_points,int buckets,int(*hash_function)(const N &,int)){
+template <typename T,typename N,typename C>
+LSH_Curve<T,N,C>::LSH_Curve(int k,int dim,int k_vec,int num_points,int buckets,int(*hash_function)(const N &,int)){
 	this->k = k;
-	this->G = new Grid<T>*[k];
+	this->G = new Grid<T,N>*[k];
 	for(int i =0;i<k;i++){
-		this->G[i] = new Grid<T>(dim,num_points);
+		this->G[i] = new Grid<T,N>(dim,num_points);
 	}
-	this->HT = new HashTable<N>(k_vec,buckets,hash_function);
+	this->HT = new HashTable<N,C>(k_vec,buckets,hash_function);
 }
 
-template <typename T,typename N>
-LSH_Curve<T,N>::~LSH_Curve(){
+template <typename T,typename N,typename C>
+LSH_Curve<T,N,C>::~LSH_Curve(){
 	for(int i =0;i<this->k;i++){
 		delete this->G[i];
 	}
@@ -23,24 +24,54 @@ LSH_Curve<T,N>::~LSH_Curve(){
 	delete this->HT;
 }
 
-template <typename T,typename N>
-int LSH_Curve<T,N>::LSH_Insert(const N & v){
-	N x;
+template <typename T,typename N,typename C>
+int LSH_Curve<T,N,C>::LSH_Insert(T * v,char *id){
+	N *Grid_Concat;
 	for(int i =0;i<this->k;i++){
-		N temp = this->G[i]->Create_GridCurve(v);
-		x.insert( x.end(), temp.begin(), temp.end() );
+		if(i==0){
+			Grid_Concat = this->G[i]->Create_GridCurve(*v);
+		}
+		else{
+			N *temp = this->G[i]->Create_GridCurve(*v);
+			int size = Grid_Concat->size();
+			bool cond = false;
+			for(int i=0;i<temp->size();i++){
+				if(cond || (((*Grid_Concat)[size-1]) != (*temp)[i])){
+					cond = true;
+					Grid_Concat->push_back((*temp)[i]);
+				}
+			}
+			delete temp;
+		}
 	}
-	for (std::vector<double>::const_iterator i = x.begin(); i != x.end(); ++i)
-	    std::cout << *i << ' ';
-	return this->HT->Hash_Insert(x);
+	C * curve;
+	curve = new C(v,Grid_Concat,id); 
+	return this->HT->Hash_Insert(curve);
 }
 
-int main(void){
-	LSH_Curve< double,std::vector<double> > x(3,2,1,1,4,&classic_function);
-	std::vector<double> v;
-	v.push_back(3.3);
-	v.push_back(4.4);
-	if(!x.LSH_Insert(v)){
-		cout << "Insertion Completed!" << endl;
+template <typename T,typename N,typename C>
+C * LSH_Curve<T,N,C>::LSH_Search(T * v,char *id){
+	N *Grid_Concat;
+	for(int i =0;i<this->k;i++){
+		if(i==0){
+			Grid_Concat = this->G[i]->Create_GridCurve(*v);
+		}
+		else{
+			N *temp = this->G[i]->Create_GridCurve(*v);
+			int size = Grid_Concat->size();
+			bool cond = false;
+			for(int i=0;i<temp->size();i++){
+				if(cond || (((*Grid_Concat)[size-1]) != (*temp)[i])){
+					cond = true;
+					Grid_Concat->push_back((*temp)[i]);
+				}
+			}
+			delete temp;
+		}
 	}
+	C * curve;
+	curve = new C(v,Grid_Concat,id); 
+	C * result = this->HT->Hash_Search(curve);
+	delete curve;
+	return result;
 }

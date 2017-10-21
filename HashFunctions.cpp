@@ -21,7 +21,7 @@ int classic_function(const std::vector<double> & v,int buckets){
 	return 0;
 };
 
-int LSH_function(const std::vector<double> &v,int buckets){
+int probabilistic(const std::vector<double> &v,int buckets){
 	return 0;
 };
 

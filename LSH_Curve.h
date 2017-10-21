@@ -5,15 +5,16 @@
 #include "Grid.h"
 #include "HashTable.h"
 
-template <typename T,typename N>
+template <typename T,typename N,typename C>
 class LSH_Curve{
-	Grid<T> ** G;
-	HashTable<N> *HT;
+	Grid<T,N> ** G;
+	HashTable<N,C> *HT;
 	int k;
 public:
 	LSH_Curve(int,int,int,int,int,int(*hash_function)(const N &,int));
 	~LSH_Curve();
-	int LSH_Insert(const N &);
+	int LSH_Insert(T *,char *);
+	C * LSH_Search(T *,char *);
 };
 
 #endif

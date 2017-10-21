@@ -1,106 +1,103 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <vector>
-#include <sstream>
 #include <unistd.h>
 #include <stdlib.h>
+#include "LSH_Curve.h"
+#include "LSH_Curve.cpp"
+#include <string.h>
+#include "Curve.h"
 
-using namespace std;
+extern int k,k_vec,L;
 
-template <typename Type>
-class List{
-	std::vector<Type> v;
-	int size;
-public:
-	List(int size_):size(size_){
-		this->v = std::vector<Type>(size_);
-	};
+#define DELIMETER "\t"
 
-	~List(){
-		cout << "Detroy List" << endl;
-		/*for(int i=0;i<this->v.size();i++){
-			this->v.erase(this->v.begin() +1);
-		}*/
+template <typename T,typename N>
+LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,int)){
+	string line;
+	ifstream myfile (path);
+	if (!myfile.is_open()){
+		cout << "Unable to open file";
+		exit(1);
 	}
-	int Get_size(){
-		return this->size;
+	char * command;
+	char buff[32];
+	command = (char *) malloc(strlen(path)+strlen("wc -l  | cut -d ' ' -f1")+2);
+	sprintf(command, "wc -l %s | cut -d ' ' -f1",path);
+	FILE *in;
+	if(!(in = popen(command, "r"))){
+		exit(1);
 	}
-};
-
-class Curve{
-	std::vector< List<double> > v;
-	string id;
-public:
-	Curve(string id_,int dimension,int m):id(id_),v(m,List <double> (dimension) ){
-		cout <<"Curve created" << endl;
-		cout << this->v[0].Get_size() << endl;
-	};
-	~Curve(){
-		cout << "Destroy Curve" << endl;
-		/*for(int i=0;i<this->v.size();i++){
-			this->v.erase(this->v.begin() +1);
-		}*/
+	int n = 100;
+	while(fgets(buff, sizeof(buff), in)!=NULL){
+		n = atoi(buff);
 	}
-};
+	pclose(in);
+	free(command);
+	LSH_Curve<T,N,Curve<T,N> > ** LSH = new LSH_Curve<T,N,Curve<T,N> > *[L];
 
-int read_curves(string path)
-{
-	string STRING;
-	ifstream infile;
-	infile.open (path.c_str());
-	int k = 0;
-	bool dim = false;
-	int dimension = 2;
-	while(!infile.eof()) // To get you all the lines.
-	{
-		int m = 0;
-		string id;
-		int size;
-		getline(infile,STRING); // Saves the line in STRING.
-		string delimiter = "\t";
-		size_t pos = 0;
-		string token;
-		while ((pos = STRING.find(delimiter)) != string::npos) {
-			token = STRING.substr(0, pos);
-			if((k == 0)){
-				if(!dim && !token.compare("@dimension")){
-					dim = true;
-					cout << "Dimension: " ;
-				}
+	int i = 0;
+	int d = 2;
+	int num_points = 10;
+	int buckets = (n>100?n/4:n);
+	bool cond = false;
+	int push_backs = 0;
+
+	while ( getline (myfile,line) ){
+		T * curve = new T();
+		char * str;
+		char *dup = strdup(line.c_str());
+		str = strtok (dup,DELIMETER);
+		int c = 0;
+		char * id;
+		while (str != NULL)
+		{
+			N v;
+			if(i == 0 && c == 0 && !strcmp(str,"@dimension")){
+				cond = true;
+			}
+			else if(i == 0 && c == 1 && cond){
+				d = atoi(str);
+				cout << "We have dimension: " << d << endl;
+			}
+			else if(c == 0){
+				id = (char *)malloc(strlen(str)+1);
+				strcpy(id,str);
+				cout << "ID: " << str << endl;
+			}
+			else if(c == 1){
+				cout << "Points: " << atoi(str) << endl;
 			}
 			else{
-				switch(m){
-					case 0:
-						id = token;
-						break;
-					case 1:
-						std::istringstream(token) >> size;
-						break;
-					default:
-						break;
+				double x[d];
+				if(d == 2)
+					sscanf(str,"(%lf,%lf)",x,x+1);
+				else if(d == 3)
+					sscanf(str,"(%lf,%lf,%lf)",x,x+1,x+2);
+				else
+					sscanf(str,"(%lf,%lf,%lf,%lf)",x,x+1,x+2,x+3);
+
+				for(int counter=0;counter<d;counter++){
+					v.push_back(x[counter]);
 				}
-				cout << token << "\t";
-				m++;
+				if(push_backs == 0){
+					for(i=0;i<L;i++){
+						LSH[i] = new LSH_Curve<T,N,Curve<T,N> >(k,d,k_vec,num_points,buckets,function);
+					}
+				}
+				curve->push_back(v);
+				push_backs++;
+				for(i=0;i<L;i++){
+					LSH[i]->LSH_Insert(curve,id);
+				}
 			}
-			STRING.erase(0, pos + delimiter.length());
+			//printf ("%s\n",str);
+			str = strtok (NULL, DELIMETER);
+			c++;
 		}
-		if(k == 0){
-			std::istringstream(STRING) >> dimension;	
-		}
-		Curve c("hello",3,2);
-		cout << STRING << endl;
-		k++;
+		free(dup);
+		i++;
 	}
-	infile.close();
-	return 0;
-}
-
-int main(int argc, char *argv[]){
-	if(argc != 2){
-		cerr << "Give path for reading curves" << endl;
-		return 1;
-	}
-	return read_curves(argv[1]);
-
+	myfile.close();
+	return LSH;
 }

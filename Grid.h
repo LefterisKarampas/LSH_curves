@@ -3,14 +3,16 @@
 
 #include <vector>
 
-template <typename T>
+double randn (double , double );
+
+template <typename T,typename N>
 class Grid{
 	std::vector<double> t;
 	double delta;
 public:
 	Grid(int,int);
 	~Grid();
-	std::vector<T> Create_GridCurve(const std::vector<T> &);
+	N * Create_GridCurve(const T &);
 };
 
 #endif
