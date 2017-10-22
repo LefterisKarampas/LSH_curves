@@ -8,12 +8,13 @@
 #include <string.h>
 #include "Curve.h"
 
+
 extern int k,k_vec,L;
 
 #define DELIMETER "\t"
 
 template <typename T,typename N>
-LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,int)){
+LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,const std::vector<int> &,int)){
 	string line;
 	ifstream myfile (path);
 	if (!myfile.is_open()){
@@ -82,21 +83,23 @@ LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,
 				}
 				if(push_backs == 0){
 					for(i=0;i<L;i++){
-						LSH[i] = new LSH_Curve<T,N,Curve<T,N> >(k,d,k_vec,num_points,buckets,function);
+						LSH[i] = new LSH_Curve<T,N,Curve<T,N> >(k,d,k_vec,num_points,buckets,i,function);
 					}
 				}
 				curve->push_back(v);
 				push_backs++;
-				for(i=0;i<L;i++){
-					LSH[i]->LSH_Insert(curve,id);
-				}
 			}
-			//printf ("%s\n",str);
 			str = strtok (NULL, DELIMETER);
 			c++;
 		}
+		if(push_backs >0){
+			for(i=0;i<L;i++){
+				LSH[i]->LSH_Insert(curve,id);
+			}
+		}
 		free(dup);
 		i++;
+		free(str);
 	}
 	myfile.close();
 	return LSH;

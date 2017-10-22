@@ -8,6 +8,7 @@ using namespace std;
 
 template <typename Type>
 class Node{
+private:
 	Type * value;
 	Node<Type> * next;
 public:
@@ -16,18 +17,14 @@ public:
 	int Set_next(Node<Type> * next);
 	Node<Type> * GetNext();
 	Type * GetValue();
+	void Clear_up();
 
-	void print(){
-		cout << "-> " << this->value << " ";
-		if(this->next != NULL)
-			this->next->print();
-		else
-			cout << endl; 
-	}
+
 };
 
 template <typename Type>
 class List{
+private:
 	Node<Type> * head;
 	int count;
 public:
@@ -35,19 +32,9 @@ public:
 	~List();
 	int List_Insert(Type *);
 	Type * List_Search(Type *);
-	void print(){
-		Node<Type> * temp;
-		temp = this->head;
-		while(temp != NULL){
-			Type x = temp->GetValue();
-			std::vector<double>::const_iterator i;
-			for (i = x.begin(); i != x.end(); ++i)
-				std::cout  << "-> " << *i << " ";
-			
-			temp = temp->GetNext(); 
-		}
-		cout << endl;
-	}
+	void Clear_up();
 };
+
+
 
 #endif

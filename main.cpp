@@ -2,10 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 #include "LSH_Curve.h"
+#include "Curve.h"
 #include "HashFunctions.h"
 #include "read_curves.cpp"
-#include "Curve.h"
+
 
 using namespace std;
 
@@ -14,9 +16,10 @@ int L = 3;
 int k_vec = 3;
 
 template <typename T,typename N>
-LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,int));
+LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,const std::vector<int> &,int));
 
 int main(int argc,char *argv[]){
+	srand((unsigned)time(NULL));
 	bool end_flag = false;
 	char * input_file = NULL;
 	char *distance_function = NULL;
@@ -143,17 +146,16 @@ int main(int argc,char *argv[]){
 			end_flag = true;
 		}
 	}
-	
 	LSH_Curve< std::vector< std::vector<double> > ,std::vector<double>, Curve<  std::vector< std::vector<double> >, std::vector<double> > > **LSH;
-	int (*function)(const std::vector<double> &,int);
+	int (*function)(const std::vector<double> &,const std::vector<int> &,int);
 	if(!strcmp(hash_function,"classic")){
 		function = &classic_function;
 	}
 	else{
 		function = &probabilistic;
 	}
-	
 	LSH = read_curves< std::vector< std::vector<double> >,std::vector<double> >(input_file,function);
+
 	std::vector< std::vector<double> > * y = new std::vector< std::vector<double> >();
 	std::vector<double> y1;
 	std::vector<double> y2;
@@ -176,6 +178,8 @@ int main(int argc,char *argv[]){
 			cout << x->GetId() << endl;
 		}
 	}
+	delete y;
+	free(id);
 	for(int i=0;i<L;i++){
 		delete LSH[i];
 	}

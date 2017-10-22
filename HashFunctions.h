@@ -3,7 +3,8 @@
 
 #include <vector>
 
-int classic_function(const std::vector<double> &,int);
+int classic_function(const std::vector<double> &,const std::vector<int> & ,int);
 
-int probabilistic(const std::vector<double> &,int);
+int probabilistic(const std::vector<double> &,const std::vector<int> &,int);
+
 #endif

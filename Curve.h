@@ -1,10 +1,8 @@
 #ifndef CURVE_H_
 #define CURVE_H_
 
-#include <string>
-#include <iostream>
+#include <vector>
 
-using namespace std;
 
 template <typename T_Curve,typename T_GridCurve>
 class Curve{
@@ -17,7 +15,10 @@ public:
 	const T_GridCurve & Get_GridCurve();
 	bool Compare_GridCurve(Curve *);
 	char * GetId();
+	void Clear_up();
 };
+
+
 
 
 #endif

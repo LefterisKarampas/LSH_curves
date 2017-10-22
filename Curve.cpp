@@ -11,15 +11,12 @@ using namespace std;
 
 template <typename T_Curve,typename T_GridCurve>
 Curve<T_Curve,T_GridCurve>::Curve(T_Curve * curve_,T_GridCurve * grid_curve_,char *id_):curve(curve_),grid_curve(grid_curve_){
-	this->id = (char *)malloc(strlen(id_)+1);
-	strcpy(this->id,id_);
+	this->id = id_;
 }
 
 template <typename T_Curve,typename T_GridCurve>
 Curve<T_Curve,T_GridCurve>::~Curve(){
-	//delete this->curve;
 	delete this->grid_curve;
-	//free(this->id);
 }
 
 
@@ -52,3 +49,8 @@ char * Curve<T_Curve,T_GridCurve>::GetId(){
 	return this->id;
 }
 
+template <typename T_Curve,typename T_GridCurve>
+void Curve<T_Curve,T_GridCurve>::Clear_up(){
+	delete this->curve;
+	free(this->id);
+}

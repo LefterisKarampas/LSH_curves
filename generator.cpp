@@ -6,7 +6,7 @@
 
 using namespace std;
 
-double randn (double mu, double sigma)
+double Uniform_Generator (double mu, double sigma)
 {
 	double U, V, S, mult;
 	static double X, Y;
@@ -33,16 +33,4 @@ double randn (double mu, double sigma)
 	call = !call;
 
 	return (mu + sigma * (double) X);
-}
-
-int main(void){
-	srand(time(NULL));
-	double d = 0.125;
-	double x;
-	for(int i=0;i<100;i++){
-		do{
-			x = randn(0,1);
-		}while(x<0 || x>=d);
-		cout << x << endl;
-	}
 }

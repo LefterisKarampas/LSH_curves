@@ -1,6 +1,5 @@
 #include <iostream>
 #include "List.h"
-
 using namespace std;
 
 
@@ -32,6 +31,11 @@ Node<Type> * Node<Type>::GetNext(){
 template <typename Type>
 Type * Node<Type>::GetValue(){
 	return this->value;
+};
+
+template <typename Type>
+void Node<Type>::Clear_up(){
+	this->value->Clear_up();
 };
 
 //List Functions
@@ -78,3 +82,15 @@ Type * List<Type>::List_Search(Type * v){
 	}
 	return NULL;
 };
+
+template<typename Type>
+void List<Type>::Clear_up(){
+	if(this->head != NULL){
+		Node<Type> *temp;
+		temp = this->head;
+		while(temp){
+			temp->Clear_up();
+			temp = temp->GetNext();
+		}
+	}
+}

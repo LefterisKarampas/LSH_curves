@@ -6,22 +6,24 @@
 
 
 using namespace std;
+static unsigned int M = (unsigned) (2<<31) - 5;
 
-
-int classic_function(const std::vector<double> & v,int buckets){
+int classic_function(const std::vector<double> & v,const std::vector<int> & r,int buckets){
 	std::vector<double>::const_iterator i;
 	long double sum = 0;
-	for (i = v.begin(); i != v.end(); ++i){
-	    sum += *i;
+	for (int i =0;i<v.size();i++){
+	    sum += v[i] * r[i];
 	}
-	int index;
-	index = (long int) sum % INT_MAX;
+	if(sum < 0){
+		sum *= -1;
+	}
+	long int index;
+	index = (long int) sum % M;
 	index %= buckets;
 	return index;
-	return 0;
 };
 
-int probabilistic(const std::vector<double> &v,int buckets){
+int probabilistic(const std::vector<double> &v,const std::vector<int> & r,int buckets){
 	return 0;
 };
 

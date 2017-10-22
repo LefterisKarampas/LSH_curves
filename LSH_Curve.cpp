@@ -1,13 +1,16 @@
 #include "LSH_Curve.h"
-#include "Grid.h"
-#include "Grid.cpp"
 #include "HashFunctions.h"
-#include "HashTable.cpp"
+#include "HashTable.h"
 #include "Curve.h"
+#include "Grid.h"
+#include "HashTable.cpp"
+#include "Curve.cpp"
+#include "Grid.cpp"
 
 template <typename T,typename N,typename C>
-LSH_Curve<T,N,C>::LSH_Curve(int k,int dim,int k_vec,int num_points,int buckets,int(*hash_function)(const N &,int)){
+LSH_Curve<T,N,C>::LSH_Curve(int k,int dim,int k_vec,int num_points,int buckets,int id,int(*hash_function)(const N &,const std::vector<int> &,int)){
 	this->k = k;
+	this->id = id;
 	this->G = new Grid<T,N>*[k];
 	for(int i =0;i<k;i++){
 		this->G[i] = new Grid<T,N>(dim,num_points);
@@ -21,6 +24,9 @@ LSH_Curve<T,N,C>::~LSH_Curve(){
 		delete this->G[i];
 	}
 	delete[] this->G;
+	if(this->id == 0){
+		this->HT->Clear_up();
+	}
 	delete this->HT;
 }
 
