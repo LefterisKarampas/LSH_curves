@@ -13,17 +13,19 @@ using namespace std;
 
 int k = 2;
 int L = 3;
-int k_vec = 3;
+int k_vec = 0;
+char *distance_function = NULL;
+char *hash_function = NULL;
 
 template <typename T,typename N>
-LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,const std::vector<int> &,int));
+LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,const std::vector<int> &,int,int,std::vector<double> **,double *));
+
+template <typename T,typename N>
+int search_curves(char *,char *,LSH_Curve<T,N,Curve<T,N> > **);
 
 int main(int argc,char *argv[]){
 	srand((unsigned)time(NULL));
-	bool end_flag = false;
 	char * input_file = NULL;
-	char *distance_function = NULL;
-	char *hash_function = NULL;
 	char *output_file = NULL;
 	char *query_file = NULL;
 	bool stats = false;
@@ -136,50 +138,76 @@ int main(int argc,char *argv[]){
 			exit(1);
 		}
 	}
-	while(!end_flag){
-		char key = 'a';
-		while(key != 'r' && key != 'f'){
-			cout << "If you want to search for another set, press 'r' else press 'f' to finish the program" << endl;
-			cin >> key;
-		}
-		if(key == 'f'){
-			end_flag = true;
-		}
+	string buf;
+	if(!input_file){
+		cout << "Give the path of dataset file" << endl;
+		cin >> buf;
+		input_file = (char *)malloc(buf.size()+1);
+		strcpy(input_file,buf.c_str());
+	}
+	if(!distance_function){
+		do{
+		cout << "Give the distance_function {DFT,DTW}" << endl;
+		cin >> buf;
+		}while(buf.compare("DFT") && buf.compare("DTW"));
+		distance_function = (char *)malloc(buf.size()+1);
+		strcpy(distance_function,buf.c_str());
+	}
+	if(!hash_function){
+		do{
+		cout << "Give the hash_function {classic,probabilistic}" << endl;
+		cin >> buf;
+		}while(buf.compare("classic") && buf.compare("probabilistic") );
+		hash_function = (char *)malloc(buf.size()+1);
+		strcpy(hash_function,buf.c_str());
 	}
 	LSH_Curve< std::vector< std::vector<double> > ,std::vector<double>, Curve<  std::vector< std::vector<double> >, std::vector<double> > > **LSH;
-	int (*function)(const std::vector<double> &,const std::vector<int> &,int);
+	int (*function)(const std::vector<double> &,const std::vector<int> &,int,int,std::vector<double> **,double *);
 	if(!strcmp(hash_function,"classic")){
 		function = &classic_function;
 	}
 	else{
 		function = &probabilistic;
+		k_vec = 3;
 	}
 	LSH = read_curves< std::vector< std::vector<double> >,std::vector<double> >(input_file,function);
 
-	std::vector< std::vector<double> > * y = new std::vector< std::vector<double> >();
-	std::vector<double> y1;
-	std::vector<double> y2;
-	std::vector<double> y3;
-	y1.push_back(8.11);
-	y1.push_back(3.41);
-	y2.push_back(9.13);
-	y2.push_back(2.9);
-	y3.push_back(0.57);
-	y3.push_back(3.14);
-	y->push_back(y1);
-	y->push_back(y2);
-	y->push_back(y3);
-	char *id = (char *)malloc(strlen("id1")+1);
-	strcpy(id,"id1");
-	cout << "---------------" << endl;
-	for(int i=0;i<L;i++){
-		Curve< std::vector< std::vector<double> >,std::vector<double> >* x = LSH[i]->LSH_Search(y,id);
-		if(x != NULL){
-			cout << x->GetId() << endl;
-		}
+	if(!query_file){
+		cout << "Give the path of query_file" << endl;
+		cin >> buf;
+		query_file = (char *)malloc(buf.size()+1);
+		strcpy(query_file,buf.c_str());
 	}
-	delete y;
-	free(id);
+	if(!output_file){
+		cout << "Give the path of output_file" << endl;
+		cin >> buf;
+		output_file = (char *)malloc(buf.size()+1);
+		strcpy(output_file,buf.c_str());
+	}
+	ofstream out_file (output_file,std::ofstream::out | std::ofstream::trunc);
+	if(out_file.is_open()){
+		out_file.close();
+	}
+	search_curves(query_file,output_file,LSH);
+	while(1){
+		char f;
+		do{
+			cout << "If you want to continue search with other query file press 'r', else press 'f'" << endl;
+			cin >> f;
+		}while(f != 'f' && f != 'r');
+		if(f == 'f'){
+			break;
+		}
+		if(query_file){
+			free(query_file);
+		}	
+		cout << "Give the path of query_file" << endl;
+		cin >> buf;
+		query_file = (char *)malloc(buf.size()+1);
+		strcpy(query_file,buf.c_str());
+		search_curves(query_file,output_file,LSH);
+	}
+	
 	for(int i=0;i<L;i++){
 		delete LSH[i];
 	}

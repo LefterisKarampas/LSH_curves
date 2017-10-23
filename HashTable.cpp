@@ -5,6 +5,8 @@
 #include <iostream>
 #include <limits.h>
 #include <stdlib.h>
+#include <vector>
+#include "generator.h"
 
 
 //rand [M,N]
@@ -51,10 +53,21 @@ void Bucket<Type>::Clear_up(){
 }
 
 template <typename Type_Function, typename Type>
-HashTable<Type_Function,Type>::HashTable(const int k_vect,const int n,int(*hash_function)(const Type_Function &,const std::vector<int> &,int)):k_vec(k_vect),buckets(n),Hash_Function(hash_function){
+HashTable<Type_Function,Type>::HashTable(const int k_vect,const int n,int(*hash_function)(const Type_Function &,const std::vector<int> &,int,int,std::vector<double> **,double *)):k_vec(k_vect),buckets(n),Hash_Function(hash_function){
 	this->T = new Bucket<Type>*[n];
 	for(int i=0;i<n;i++){
 		this->T[i] = new Bucket<Type>();
+	}
+	if(this->k_vec > 0){
+		this->t = (double *) malloc(sizeof(double)*k_vec);
+		this->v = new std::vector<double> * [k_vec];
+		for(int i=0;i<k_vec;i++){
+			this->v[i] = new std::vector<double>();
+			do{
+				this->t[i] = Uniform_Generator(0,1);
+			}while(t[i]<0 || t[i]>=4);
+			this->r.push_back( MIN + (rand() / (RAND_MAX + 1.0))*(MAX-MIN+1));
+		}
 	}
 }
 
@@ -64,19 +77,28 @@ HashTable<Type_Function,Type>::~HashTable(){
 		delete this->T[i];
 	}
 	delete[] this->T;
+	if(this->k_vec > 0){
+		free(this->t);
+		for(int i =0;i<this->k_vec;i++){
+			delete this->v[i];
+		}
+		delete[] this->v;
+	}
 }
 template <typename Type_Function, typename Type>
 int HashTable<Type_Function,Type>::Hash(Type & x){
-	return (*this->Hash_Function)(x.Get_GridCurve(),this->r,this->buckets);
+	return (*this->Hash_Function)(x.Get_GridCurve(),this->r,this->buckets,this->k_vec,this->v,this->t);
 }
 
 template <typename Type_Function, typename Type>
 int HashTable<Type_Function,Type>::Hash_Insert(Type * x){
-	int size = x->Get_GridCurve().size();
-	if(size > this->r.size()){
-		int rsize = this->r.size();
-		for(int i=0;i<size-rsize;i++){
-			this->r.push_back( MIN + (rand() / (RAND_MAX + 1.0))*(MAX-MIN+1));
+	if(this->k_vec == 0){
+		unsigned int size = x->Get_GridCurve().size();
+		if(size > this->r.size()){
+			int rsize = this->r.size();
+			for(unsigned int i=0;i<size-rsize;i++){
+				this->r.push_back( MIN + (rand() / (RAND_MAX + 1.0))*(MAX-MIN+1));
+			}
 		}
 	}
 	int bucket = this->Hash(*x);
@@ -91,10 +113,10 @@ int HashTable<Type_Function,Type>::Hash_Insert(Type * x){
 
 template <typename Type_Function, typename Type>
 Type * HashTable<Type_Function,Type>::Hash_Search(Type * x){
-	int size = x->Get_GridCurve().size();
+	unsigned int size = x->Get_GridCurve().size();
 	if(size > this->r.size()){
 		int rsize = this->r.size();
-		for(int i=0;i<size-rsize;i++){
+		for(unsigned int i=0;i<size-rsize;i++){
 			this->r.push_back( MIN + (rand() / (RAND_MAX + 1.0))*(MAX-MIN+1));
 		}
 	}

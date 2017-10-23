@@ -35,7 +35,7 @@ bool Curve<T_Curve,T_GridCurve>::Compare_GridCurve(Curve *v){
 		return false;
 	}
 	else{
-		for(int i=0;i<t1.size();i++){
+		for(unsigned int i=0;i<t1.size();i++){
 			if(t1[i] != (*this->grid_curve)[i]){
 				return false;
 			}

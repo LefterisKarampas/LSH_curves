@@ -32,8 +32,13 @@ template <typename T,typename N>
 N * Grid<T,N>::Create_GridCurve(const T & v){
 	N *vec = new N();
 	double prev;
-	for(int k=0;k<v.size();k++){
-		for(int i=0;i<v[k].size();i++){
+	for(unsigned int k=0;k<v.size();k++){
+		unsigned int size = v[k].size();
+		if(size != t.size()){
+			cerr << "We expected " <<t.size()<<"-dimensional curve and get " << size <<"-dimensional curve!"<<endl;
+			exit(1);
+		}
+		for(unsigned int i=0;i<size;i++){
 			double temp = (int)(((v[k])[i]+0.5)/this->delta) + this->t[i];
 			if(i == 0 || prev != temp)
 				vec->push_back(temp);

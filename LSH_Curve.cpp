@@ -8,7 +8,7 @@
 #include "Grid.cpp"
 
 template <typename T,typename N,typename C>
-LSH_Curve<T,N,C>::LSH_Curve(int k,int dim,int k_vec,int num_points,int buckets,int id,int(*hash_function)(const N &,const std::vector<int> &,int)){
+LSH_Curve<T,N,C>::LSH_Curve(int k,int dim,int k_vec,int num_points,int buckets,int id,int(*hash_function)(const N &,const std::vector<int> &,int,int,std::vector<double> **,double *)){
 	this->k = k;
 	this->id = id;
 	this->G = new Grid<T,N>*[k];
@@ -39,9 +39,9 @@ int LSH_Curve<T,N,C>::LSH_Insert(T * v,char *id){
 		}
 		else{
 			N *temp = this->G[i]->Create_GridCurve(*v);
-			int size = Grid_Concat->size();
+			unsigned int size = Grid_Concat->size();
 			bool cond = false;
-			for(int i=0;i<temp->size();i++){
+			for(unsigned int i=0;i<temp->size();i++){
 				if(cond || (((*Grid_Concat)[size-1]) != (*temp)[i])){
 					cond = true;
 					Grid_Concat->push_back((*temp)[i]);
@@ -64,9 +64,9 @@ C * LSH_Curve<T,N,C>::LSH_Search(T * v,char *id){
 		}
 		else{
 			N *temp = this->G[i]->Create_GridCurve(*v);
-			int size = Grid_Concat->size();
+			unsigned int size = Grid_Concat->size();
 			bool cond = false;
-			for(int i=0;i<temp->size();i++){
+			for(unsigned int i=0;i<temp->size();i++){
 				if(cond || (((*Grid_Concat)[size-1]) != (*temp)[i])){
 					cond = true;
 					Grid_Concat->push_back((*temp)[i]);

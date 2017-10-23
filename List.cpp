@@ -20,6 +20,7 @@ Node<Type>::~Node(){
 template<typename Type>
 int Node<Type>::Set_next(Node<Type> * next){
 	this->next = next;
+	return 0;
 }
 
 

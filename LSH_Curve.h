@@ -13,7 +13,7 @@ private:
 	int k;
 	int id;
 public:
-	LSH_Curve(int,int,int,int,int,int,int(*hash_function)(const N &,const std::vector<int> &,int));
+	LSH_Curve(int,int,int,int,int,int,int(*hash_function)(const N &,const std::vector<int> &,int,int,std::vector<double> **,double *));
 	~LSH_Curve();
 	int LSH_Insert(T *,char *);
 	C * LSH_Search(T *,char *);
