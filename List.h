@@ -18,8 +18,7 @@ public:
 	Node<Type> * GetNext();
 	Type * GetValue();
 	void Clear_up();
-
-
+	void Search_Clear();
 };
 
 template <typename Type>
@@ -31,8 +30,14 @@ public:
 	List();
 	~List();
 	int List_Insert(Type *);
-	Type * List_Search(Type *);
+	List<Type> * List_Search(Type *,bool *);
 	void Clear_up();
+	void Set_NULL();
+	void Search_Clear();
+	Type * find_min(Type ,long double *,
+			long double (*distance)(const  std::vector< std::vector<double> > &,const std::vector< std::vector<double> > &),double,std::vector<char *> *);
+	Type * find_min(Type ,long double *,
+			long double (*distance)(const  std::vector< std::vector<double> > &,const std::vector< std::vector<double> > &));
 };
 
 

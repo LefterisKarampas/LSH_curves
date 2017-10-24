@@ -49,6 +49,13 @@ char * Curve<T_Curve,T_GridCurve>::GetId(){
 	return this->id;
 }
 
+
+template <typename T_Curve,typename T_GridCurve>
+T_Curve & Curve<T_Curve,T_GridCurve>::GetCurve(){
+	return *(this->curve);
+}
+
+
 template <typename T_Curve,typename T_GridCurve>
 void Curve<T_Curve,T_GridCurve>::Clear_up(){
 	delete this->curve;

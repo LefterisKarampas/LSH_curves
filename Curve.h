@@ -15,6 +15,7 @@ public:
 	const T_GridCurve & Get_GridCurve();
 	bool Compare_GridCurve(Curve *);
 	char * GetId();
+	T_Curve & GetCurve();
 	void Clear_up();
 };
 

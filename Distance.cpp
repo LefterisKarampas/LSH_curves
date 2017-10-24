@@ -19,19 +19,19 @@ T my_min(T x, T y){
 template <typename T>
 long double Euclidean_Distance(const std::vector<T> & v1,const std::vector<T> &v2){
  	long double sum = 0;
- 	for(int i = 0;i<v1.size();i++){
+ 	for(unsigned int i = 0;i<v1.size();i++){
  		sum += pow((v1[i] - v2[i]),2);
  	}
  	return sqrt(sum);
  };
 
 template <typename T>
-long double Frechet_Distance(const std::vector<T> & v1,const std::vector<T> &v2){
-	int n = v1.size();
-	int m = v2.size();
+long double DFT(const std::vector<T> & v1,const std::vector<T> &v2){
+	unsigned int n = v1.size();
+	unsigned int m = v2.size();
 	long double C[n][m];
-	for(int i=0;i<n;i++){
-		for(int j=0;j<m;j++){
+	for(unsigned int i=0;i<n;i++){
+		for(unsigned int j=0;j<m;j++){
 			if(i == 0 && j == 0){
 				C[0][0] = Euclidean_Distance(v1[0],v2[0]);
 			}
@@ -45,20 +45,18 @@ long double Frechet_Distance(const std::vector<T> & v1,const std::vector<T> &v2)
 				C[i][j] = my_max(my_min(my_min(C[i-1][j],C[i-1][j-1]),C[i][j-1]),
 					Euclidean_Distance(v1[i],v2[j])); 
 			}
-			cout << C[i][j] << "  ";
 		}
-		cout << endl;
 	}
 	return C[n-1][m-1];
 }
 
 template <typename T>
-long double Dynamic_Time_Wraping(const std::vector<T> &v1,const std::vector<T> &v2){
-	int n = v1.size();
-	int m = v2.size();
+long double DTW(const std::vector<T> &v1,const std::vector<T> &v2){
+	unsigned int n = v1.size();
+	unsigned int m = v2.size();
 	long double C[n][m];
-	for(int i=0;i<n;i++){
-		for(int j=0;j<m;j++){
+	for(unsigned int i=0;i<n;i++){
+		for(unsigned int j=0;j<m;j++){
 			if(i == 0 && j == 0){
 				C[0][0] = Euclidean_Distance(v1[0],v2[0]);
 			}
@@ -71,9 +69,7 @@ long double Dynamic_Time_Wraping(const std::vector<T> &v1,const std::vector<T> &
 			else{
 				C[i][j] = my_min(my_min(C[i-1][j],C[i-1][j-1]),C[i][j-1])+Euclidean_Distance(v1[i],v2[j]); 
 			}
-			cout << C[i][j] << "  ";
 		}
-		cout << endl;
 	}
 	return C[n-1][m-1];
 }

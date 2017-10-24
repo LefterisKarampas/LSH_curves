@@ -1,5 +1,6 @@
 #ifndef HASH_TABLE_H_
 #define HASH_TABLE_H_
+
 #include "List.h"
 
 template <typename Type>
@@ -10,7 +11,7 @@ public:
 	Bucket();
 	~Bucket();
 	int Bucket_Insert(Type * );
-	Type * Bucket_Search(Type *);
+	List<Type> * Bucket_Search(Type *,bool *);
 	void Clear_up();
 };
 
@@ -29,7 +30,7 @@ public:
 	~HashTable();
 	int Hash(Type & x);
 	int Hash_Insert(Type * x);
-	Type * Hash_Search(Type * x);
+	List<Type> * Hash_Search(Type * x,bool *);
 	void Clear_up();
 };
 

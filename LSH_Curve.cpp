@@ -56,7 +56,7 @@ int LSH_Curve<T,N,C>::LSH_Insert(T * v,char *id){
 }
 
 template <typename T,typename N,typename C>
-C * LSH_Curve<T,N,C>::LSH_Search(T * v,char *id){
+List<C> * LSH_Curve<T,N,C>::LSH_Search(T * v,char *id,bool * flag){
 	N *Grid_Concat;
 	for(int i =0;i<this->k;i++){
 		if(i==0){
@@ -77,7 +77,7 @@ C * LSH_Curve<T,N,C>::LSH_Search(T * v,char *id){
 	}
 	C * curve;
 	curve = new C(v,Grid_Concat,id); 
-	C * result = this->HT->Hash_Search(curve);
+	List<C> * result = this->HT->Hash_Search(curve,flag);
 	delete curve;
 	return result;
 }

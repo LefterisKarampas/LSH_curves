@@ -4,9 +4,12 @@
 #include <vector>
 
 template <typename T>
-long double Frechet_Distance(const std::vector<Τ> &,const std::vector<Τ> &);
+long double DFT(const std::vector<T> &,const std::vector<T> &);
+
 
 template <typename T>
-long double Dynamic_Time_Wraping(const std::vector<Τ> &,const std::vector<Τ> &);
+long double DTW(const std::vector<T> &,const std::vector<T> &);
+
+
 
 #endif

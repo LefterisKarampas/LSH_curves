@@ -35,14 +35,13 @@ int Bucket<Type>::Bucket_Insert(Type * x){
 }
 
 template <typename Type>
-Type * Bucket<Type>::Bucket_Search(Type * x){
+List<Type> * Bucket<Type>::Bucket_Search(Type * x,bool *flag){
 	if(list != NULL){
-		return this->list->List_Search(x);
+		return this->list->List_Search(x,flag);
 	}
 	else{
 		return NULL;
 	}
-	//this->list->print();
 }
 
 template <typename Type>
@@ -112,20 +111,23 @@ int HashTable<Type_Function,Type>::Hash_Insert(Type * x){
 
 
 template <typename Type_Function, typename Type>
-Type * HashTable<Type_Function,Type>::Hash_Search(Type * x){
-	unsigned int size = x->Get_GridCurve().size();
-	if(size > this->r.size()){
-		int rsize = this->r.size();
-		for(unsigned int i=0;i<size-rsize;i++){
-			this->r.push_back( MIN + (rand() / (RAND_MAX + 1.0))*(MAX-MIN+1));
+List<Type> * HashTable<Type_Function,Type>::Hash_Search(Type * x,bool *flag){
+	if(this->k_vec == 0){
+		unsigned int size = x->Get_GridCurve().size();
+		if(size > this->r.size()){
+			int rsize = this->r.size();
+			for(unsigned int i=0;i<size-rsize;i++){
+				this->r.push_back( MIN + (rand() / (RAND_MAX + 1.0))*(MAX-MIN+1));
+			}
 		}
 	}
 	int bucket = this->Hash(*x);
 	if(bucket >= this->buckets){
 		cerr << "Fail hash function: Index = " << bucket << endl;
-		return NULL;
+		exit(1);
 	}
-	return this->T[bucket]->Bucket_Search(x);
+	return this->T[bucket]->Bucket_Search(x,flag);
+
 }
 
 template <typename Type_Function, typename Type>

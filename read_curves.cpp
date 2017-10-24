@@ -1,12 +1,24 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <algorithm>
 #include <unistd.h>
+#include <vector>
 #include <stdlib.h>
 #include "LSH_Curve.h"
 #include "LSH_Curve.cpp"
 #include <string.h>
 #include "Curve.h"
+#include "List.h"
+#include "Distance.h"
+#include "Distance.cpp"
+
+inline bool comparisonFunc(const char *c1, const char *c2)
+{
+    return strcmp(c1, c2) < 0;
+}
+
+
 
 
 extern int k,k_vec,L;
@@ -70,7 +82,12 @@ LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,
 				cout << "ID: " << str << endl;
 			}
 			else if(c == 1){
-				cout << "Points: " << atoi(str) << endl;
+				int points = atoi(str);
+				if(points == 0){
+					cerr << "Failed in query file parsing" << endl;
+					exit(1);
+				}
+				cout << "Points: " << points << endl;
 			}
 			else{
 				double x[d];
@@ -122,6 +139,13 @@ LSH_Curve<T,N,Curve<T,N> > ** read_curves(char * path,int (*function)(const N &,
 template <typename T,typename N>
 int search_curves(char *query_file,char * output_file,LSH_Curve<T,N,Curve<T,N> > **LSH){
 	string line;
+	long double (*distance)(const std::vector<N> &,const std::vector<N> &);
+	if(!strcmp(distance_function,"DFT")){
+		distance = &(DFT<N>);
+	}
+	else{
+		distance = &(DTW<N>);
+	}
 	ofstream out_file (output_file,std::ofstream::out | std::ofstream::app);
 	if (!out_file.is_open()){
 		cerr << "Unable to open dataset file";
@@ -159,7 +183,12 @@ int search_curves(char *query_file,char * output_file,LSH_Curve<T,N,Curve<T,N> >
 				cout << "ID: " << str << endl;
 			}
 			else if(c == 1){
-				cout << "Points: " << atoi(str) << endl;
+				int points = atoi(str);
+				if(points == 0){
+					cerr << "Failed in query file parsing" << endl;
+					exit(1);
+				}
+				cout << "Points: " << points << endl;
 			}
 			else{
 				double x[d];
@@ -190,21 +219,100 @@ int search_curves(char *query_file,char * output_file,LSH_Curve<T,N,Curve<T,N> >
 			c++;
 		}
 		if(curve != NULL){
-			Curve<T,N>* x;
+			bool find = false;
+			std::vector<char *> *r_near;
+			r_near = new std::vector<char *>();
+			List< Curve<T,N> > ** x;
+			Curve<T,N> * min = NULL;
+			Curve<T,N> my_curve(curve,NULL,id);
+			long double min_distance;
+			x = new List< Curve<T,N> > *[L];
+			bool condition[L];
 			for(i=0;i<L;i++){
-				 x = LSH[i]->LSH_Search(curve,id);
+				condition[i] = false;
+				 x[i] = LSH[i]->LSH_Search(curve,id,condition+i);
+				 if(condition[i]){
+				 	if(min == NULL){
+				 		if(R > 0){
+				 			min = x[i]->find_min(my_curve,&min_distance,distance,R,r_near);
+				 		}
+				 		else{
+				 			min = x[i]->find_min(my_curve,&min_distance,distance);
+				 		}
+				 		find = true;
+				 	}
+				 	else{
+				 		Curve<T,N> * min_t = NULL;
+						long double min_distance_t;
+						if(R > 0)
+							min_t = x[i]->find_min(my_curve,&min_distance_t,distance,R,r_near);
+						else
+							min_t = x[i]->find_min(my_curve,&min_distance_t,distance);
+						if(min_distance > min_distance_t){
+							min = min_t;
+							min_distance = min_distance_t;
+						}
+				 	}
+				 }
 			}
-			if(x != NULL){
-				out_file << "Query: " << id << endl;
-				out_file << "DistanceFunction: " << distance_function << endl;
-				out_file << "HashFunction: " << hash_function << endl;
-				out_file << "FoundGridCurve: " << "{True,False}" << endl;
-				out_file << "LSH Nearest neighbor: " << x->GetId() << endl;
-				out_file << "True Nearest neighbor: " << x->GetId() << endl;
-				out_file << "distanceLSH: " << "0.0" << endl;
-				out_file << "distanceTrue: " << "0.0" << endl;
+			if(find == false){
+				for(i=0;i<L;i++){
+					if(x[i] == NULL){
+						continue;
+					}
+					if(min == NULL){
+				 		if(R > 0){
+				 			min = x[i]->find_min(my_curve,&min_distance,distance,R,r_near);
+				 		}
+				 		else{
+				 			min = x[i]->find_min(my_curve,&min_distance,distance);
+				 		}
+				 	}
+				 	else{
+				 		Curve<T,N> * min_t = NULL;
+						long double min_distance_t;
+						if(R > 0){
+				 			min_t = x[i]->find_min(my_curve,&min_distance_t,distance,R,r_near);
+				 		}
+				 		else{
+				 			min_t = x[i]->find_min(my_curve,&min_distance_t,distance);
+				 		}
+						if(min_distance > min_distance_t){
+							min = min_t;
+							min_distance = min_distance_t;
+						}
+				 	}
+				}
 			}
+			out_file << "Query: " << id << endl;
+			out_file << "DistanceFunction: " << distance_function << endl;
+			out_file << "HashFunction: " << hash_function << endl;
+			out_file << "FoundGridCurve: " << (find>0?"True":"False") << endl;
+			out_file << "LSH Nearest neighbor: " << (find>0?min->GetId():"None") << endl;
+			//out_file << "True Nearest neighbor: " << x->GetId() << endl;
+			out_file << "distanceLSH: " << min_distance << endl;
+			out_file << "distanceTrue: " << "0.0" << endl;
+			if(R > 0){
+				std::sort (r_near->begin(), r_near->end(),comparisonFunc); 
+				r_near->erase( unique( r_near->begin(), r_near->end() ), r_near->end() );
+				out_file << "R-near neighbors: " << endl;
+				for(unsigned int j=0;j<r_near->size();j++){
+					out_file << (*r_near)[j] << endl;
+				}
+			}
+			delete r_near;
 			out_file << endl;
+			for(int i=0;i<L;i++){
+				if(x[i] != NULL){
+					if(condition[i] == false)
+						x[i]->Set_NULL();
+					else{
+						x[i]->Search_Clear();
+					}
+				}
+				delete x[i];
+			}
+			delete[] x;
 			delete curve;
 			free(id);
 		}
