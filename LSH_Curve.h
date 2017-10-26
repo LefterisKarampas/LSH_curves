@@ -15,8 +15,10 @@ private:
 public:
 	LSH_Curve(int,int,int,int,int,int,int(*hash_function)(const N &,const std::vector<int> &,int,int,std::vector<double> **,double *));
 	~LSH_Curve();
+	N * Create_GridCurve(T *);
 	int LSH_Insert(T *,char *);
 	List<C> * LSH_Search(T *,char *,bool *);
+	C * Check_all(T *,char *,C * ,long double *,bool *,double,std::vector<char *> *,C *,long double *,long double (*distance)(const T &,const T &));
 };
 
 

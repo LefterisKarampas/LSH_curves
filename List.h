@@ -38,6 +38,8 @@ public:
 			long double (*distance)(const  std::vector< std::vector<double> > &,const std::vector< std::vector<double> > &),double,std::vector<char *> *);
 	Type * find_min(Type ,long double *,
 			long double (*distance)(const  std::vector< std::vector<double> > &,const std::vector< std::vector<double> > &));
+	Type * find_nearest_min(Type *,Type *,long double *,bool *,double ,std::vector<char *> *,Type *,long double *,long double(*distance)(const std::vector< std::vector<double> >&,const std::vector< std::vector<double> >&));
+	Type * find_nearest(Type *,Type *,long double *,long double(*distance)(const std::vector< std::vector<double> >&,const std::vector< std::vector<double> >&));
 };
 
 

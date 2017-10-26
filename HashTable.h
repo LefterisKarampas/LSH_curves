@@ -13,6 +13,8 @@ public:
 	int Bucket_Insert(Type * );
 	List<Type> * Bucket_Search(Type *,bool *);
 	void Clear_up();
+	Type * find_nearest_min(Type *,Type *,long double *,bool *,double,std::vector<char *> *,Type *,long double *,long double(*distance)(const std::vector< std::vector<double> >&,const std::vector< std::vector<double> >&));
+	Type * find_nearest(Type*,Type *,long double *,long double(*distance)(const std::vector< std::vector<double> >&,const std::vector< std::vector<double> >&));
 };
 
 template <typename Type_Function, typename Type>
@@ -28,10 +30,11 @@ private:
 public:
 	HashTable(const int,const int,int(*hash_function)(const Type_Function &,const std::vector<int> &,int,int,std::vector<double> **,double *));
 	~HashTable();
-	int Hash(Type & x);
+	int Hash(Type * x);
 	int Hash_Insert(Type * x);
 	List<Type> * Hash_Search(Type * x,bool *);
 	void Clear_up();
+	Type * Check_all(Type *,Type *,long double *,bool *,double,std::vector<char *> *,Type *,long double *,long double(*distance)(const std::vector< std::vector<double> >&,const std::vector< std::vector<double> >&));
 };
 
 

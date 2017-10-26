@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include "List.h"
 using namespace std;
 
@@ -186,3 +187,62 @@ Type * List<Type>::find_min(Type curve,long double *min_distance,
 }
 
 
+template<typename Type>
+Type * List<Type>::find_nearest_min(Type *curve,Type *neigh,long double *neigh_dist,bool *cond,double R,std::vector<char *> *r_near,Type *nearest_neigh,long double *nearest_dist,long double(*distance)(const std::vector< std::vector<double> >&,const std::vector< std::vector<double> >&)){
+	Node<Type> *temp;
+	temp = this->head;
+	bool condition = false;
+	while(temp){
+		Type *x;
+		x = temp->GetValue();
+		long double temp_dist;
+		temp_dist = (*distance)(x->GetCurve(),curve->GetCurve());
+		if(x->Compare_GridCurve(curve)){
+			*cond = true;
+			if(neigh == NULL){
+				neigh = x;
+				*neigh_dist = temp_dist;
+			}
+			else if(*neigh_dist > temp_dist){
+				*neigh_dist = temp_dist;
+				neigh = x;
+			}
+			if(temp_dist < R){
+				r_near->push_back(x->GetId());
+			}
+		}
+		if(!condition){
+			nearest_neigh = x;
+			*nearest_dist = temp_dist;
+			condition = true;
+		}
+		else if(*nearest_dist > temp_dist){
+			nearest_neigh = x;
+			*nearest_dist = temp_dist;
+		}
+		temp = temp->GetNext();
+	}
+	return nearest_neigh;
+}
+
+template<typename Type>
+Type * List<Type>::find_nearest(Type *curve,Type *nearest_neigh,long double *nearest_dist,long double(*distance)(const std::vector< std::vector<double> >&,const std::vector< std::vector<double> >&)){
+	Node<Type> *temp;
+	temp = this->head;
+	Type *x;
+	while(temp){
+		x = temp->GetValue();
+		long double temp_dist;
+		temp_dist = (*distance)(x->GetCurve(),curve->GetCurve());
+		if(nearest_neigh == NULL){
+			nearest_neigh = x;
+			*nearest_dist = temp_dist;
+		}
+		else if(*nearest_dist > temp_dist){
+			nearest_neigh = x;
+			*nearest_dist = temp_dist;
+		}
+		temp = temp->GetNext();
+	}
+	return nearest_neigh;
+}

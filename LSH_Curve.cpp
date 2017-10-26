@@ -31,7 +31,7 @@ LSH_Curve<T,N,C>::~LSH_Curve(){
 }
 
 template <typename T,typename N,typename C>
-int LSH_Curve<T,N,C>::LSH_Insert(T * v,char *id){
+N * LSH_Curve<T,N,C>::Create_GridCurve(T *v){
 	N *Grid_Concat;
 	for(int i =0;i<this->k;i++){
 		if(i==0){
@@ -50,6 +50,12 @@ int LSH_Curve<T,N,C>::LSH_Insert(T * v,char *id){
 			delete temp;
 		}
 	}
+	return Grid_Concat;
+}
+
+template <typename T,typename N,typename C>
+int LSH_Curve<T,N,C>::LSH_Insert(T * v,char *id){
+	N* Grid_Concat = Create_GridCurve(v);
 	C * curve;
 	curve = new C(v,Grid_Concat,id); 
 	return this->HT->Hash_Insert(curve);
@@ -57,27 +63,21 @@ int LSH_Curve<T,N,C>::LSH_Insert(T * v,char *id){
 
 template <typename T,typename N,typename C>
 List<C> * LSH_Curve<T,N,C>::LSH_Search(T * v,char *id,bool * flag){
-	N *Grid_Concat;
-	for(int i =0;i<this->k;i++){
-		if(i==0){
-			Grid_Concat = this->G[i]->Create_GridCurve(*v);
-		}
-		else{
-			N *temp = this->G[i]->Create_GridCurve(*v);
-			unsigned int size = Grid_Concat->size();
-			bool cond = false;
-			for(unsigned int i=0;i<temp->size();i++){
-				if(cond || (((*Grid_Concat)[size-1]) != (*temp)[i])){
-					cond = true;
-					Grid_Concat->push_back((*temp)[i]);
-				}
-			}
-			delete temp;
-		}
-	}
+	N* Grid_Concat = Create_GridCurve(v);
 	C * curve;
 	curve = new C(v,Grid_Concat,id); 
 	List<C> * result = this->HT->Hash_Search(curve,flag);
 	delete curve;
 	return result;
+}
+
+
+template <typename T,typename N,typename C>
+C * LSH_Curve<T,N,C>::Check_all(T *v,char *id,C * neigh,long double *neigh_dist,bool *cond,double R,std::vector<char *> *r_near,C *nearest_neigh,long double *nearest_dist,long double (*distance)(const T&,const T &)){
+	N * Grid_Concat = Create_GridCurve(v);
+	C * curve;
+	curve = new C(v,Grid_Concat,id);
+	nearest_neigh = this->HT->Check_all(curve,neigh,neigh_dist,cond,R,r_near,nearest_neigh,nearest_dist,distance);
+	delete curve;
+	return nearest_neigh;
 }
