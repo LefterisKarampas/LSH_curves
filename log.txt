@@ -1,0 +1,6 @@
+Input file: medium_dataset
+Hash function: classic
+Distance function: DFT
+Output file: out
+Query file: query
+551

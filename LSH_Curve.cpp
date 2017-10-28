@@ -24,9 +24,9 @@ LSH_Curve<T,N,C>::~LSH_Curve(){
 		delete this->G[i];
 	}
 	delete[] this->G;
-	if(this->id == 0){
+	/*if(this->id == 0){
 		this->HT->Clear_up();
-	}
+	}*/
 	delete this->HT;
 }
 
