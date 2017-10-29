@@ -3,23 +3,9 @@
 
 #include <iostream>
 #include <vector>
+#include "Node.h"
 
 using namespace std;
-
-template <typename Type>
-class Node{
-private:
-	Type * value;
-	Node<Type> * next;
-public:
-	Node(Type * x);
-	~Node();
-	int Set_next(Node<Type> * next);
-	Node<Type> * GetNext();
-	Type * GetValue();
-	void Clear_up();
-	void Search_Clear();
-};
 
 template <typename Type>
 class List{

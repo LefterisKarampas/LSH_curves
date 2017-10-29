@@ -6,7 +6,8 @@
 #include "../include/LSH_Curve.h"
 #include "../include/Curve.h"
 #include "../include/HashFunctions.h"
-#include "read_curves.cpp"
+#include "../include/main_fuctionality.h"
+#include "main_fuctionality.cpp"
 
 
 using namespace std;
