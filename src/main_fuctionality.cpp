@@ -515,8 +515,6 @@ LSH_Curve<T,N,Curve<T,N> > ** search_curves(char *query_file,char * output_file,
 				}
 			}
 			clock_t end = clock();
-			cout << "DistanceTrue: " << distanceTrue << endl;
-			cout << "minDistanceLSH: " << minDistanceLSH << endl;
 			double tTrue = double(end - begin) / CLOCKS_PER_SEC;
 			out_file << "Query: " << id << endl;
 			out_file << "DistanceFunction: "  << distance_function << endl;

@@ -26,7 +26,11 @@ char *hash_function = NULL;
 
 int read_args(int argc,char **argv){
 	for(int i = 1; i <argc;i+=2){
-		if(!strcmp(argv[i],"-d")){
+		if(!strcmp(argv[i],"-h")){
+			cout << "Usage: ./lsh –d <input file> –q <query file> –k <int> -L <int> -ο <output file> -stats [optional] –function {DFT, DTW} -hash {classic, probabilistic}" << endl;
+			exit(1);
+		}
+		else if(!strcmp(argv[i],"-d")){
 			if(i+1 < argc){
 				int m = strlen(argv[i+1]);
 				input_file = (char *) malloc(m+1);
@@ -147,7 +151,7 @@ int main(int argc,char *argv[]){
 		input_file = (char *)malloc(buf.size()+1);
 		strcpy(input_file,buf.c_str());
 	}
-	if(!distance_function){
+	if(!distance_function || (strcmp(distance_function,"DFT") && strcmp(distance_function,"DWT"))){
 		do{
 		cout << "Give the distance_function {DFT,DTW}" << endl;
 		cin >> buf;
