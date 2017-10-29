@@ -1,11 +1,11 @@
 #ifndef _GRID_CPP_
 #define _GRID_CPP_
 #include <vector>
-#include "Grid.h"
+#include "../include/Grid.h"
 #include <iostream>
 #include <stdlib.h>
 #include <math.h>
-#include "generator.h"
+#include "../include/generator.h"
 
 
 using namespace std;

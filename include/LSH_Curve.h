@@ -8,10 +8,10 @@
 template <typename T,typename N,typename C>
 class LSH_Curve{
 private:
-	Grid<T,N> ** G;
-	HashTable<N,C> *HT;
-	int k;
-	int id;
+	Grid<T,N> ** G;						//Array of Grids
+	HashTable<N,C> *HT;					//LSH HashTAble
+	int k;								//Number of k Grids
+	int id;								//LSH id number
 public:
 	LSH_Curve(int,int,int,int,int,int,int(*hash_function)(const N &,const std::vector<int> &,int,int,std::vector<double> **,double *));
 	~LSH_Curve();

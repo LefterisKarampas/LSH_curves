@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Distance.h"
+#include "../include/Distance.h"
 #include <vector>
 #include <math.h>
 

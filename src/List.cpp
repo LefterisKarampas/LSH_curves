@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "List.h"
+#include "../include/List.h"
 using namespace std;
 
 
@@ -207,9 +207,9 @@ Type * List<Type>::find_nearest_min(Type *curve,Type *neigh,long double *neigh_d
 				*neigh_dist = temp_dist;
 				neigh = x;
 			}
-			if(temp_dist < R){
-				r_near->push_back(x->GetId());
-			}
+		}
+		if(temp_dist < R){
+			r_near->push_back(x->GetId());
 		}
 		if(!condition){
 			nearest_neigh = x;

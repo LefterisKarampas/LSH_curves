@@ -6,7 +6,7 @@
 template <typename Type>
 class Bucket{
 private:
-	List<Type> *list;
+	List<Type> *list;		//Each Bucket has a List
 public:
 	Bucket();
 	~Bucket();
@@ -17,15 +17,20 @@ public:
 	Type * find_nearest(Type*,Type *,long double *,long double(*distance)(const std::vector< std::vector<double> >&,const std::vector< std::vector<double> >&));
 };
 
+
+
+
+
 template <typename Type_Function, typename Type>
 class HashTable{
 private:
-	Bucket<Type> ** T;
+	Bucket<Type> ** T;					//Array of Buckets
+	//Dynamic hash_function
 	int (*Hash_Function)(const Type_Function &,const std::vector<int> &,int,int,std::vector<double> **,double *);
-	int buckets;
-	int k_vec;
-	std::vector<int> r;
-	std::vector<double> **v;
+	int buckets;						//Number of buckets
+	int k_vec_;
+	std::vector<int> r;					//ri which used in hash_function
+	std::vector<double> **v;			//v which used to calculate the LSH hash_function
 	double * t;
 public:
 	HashTable(const int,const int,int(*hash_function)(const Type_Function &,const std::vector<int> &,int,int,std::vector<double> **,double *));

@@ -3,9 +3,9 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include "LSH_Curve.h"
-#include "Curve.h"
-#include "HashFunctions.h"
+#include "../include/LSH_Curve.h"
+#include "../include/Curve.h"
+#include "../include/HashFunctions.h"
 #include "read_curves.cpp"
 
 
@@ -14,17 +14,16 @@ using namespace std;
 int k = 2;
 int L = 3;
 int k_vec = 0;
-char *distance_function = NULL;
-char *hash_function = NULL;
 bool stats = false;
 int n = 0;
+char * input_file = NULL;
+char *output_file = NULL;
+char *query_file = NULL;
+char *distance_function = NULL;
+char *hash_function = NULL;
 
 
-int main(int argc,char *argv[]){
-	srand((unsigned)time(NULL));
-	char * input_file = NULL;
-	char *output_file = NULL;
-	char *query_file = NULL;
+int read_args(int argc,char **argv){
 	for(int i = 1; i <argc;i+=2){
 		if(!strcmp(argv[i],"-d")){
 			if(i+1 < argc){
@@ -134,6 +133,12 @@ int main(int argc,char *argv[]){
 			exit(1);
 		}
 	}
+	return 0;
+}
+
+int main(int argc,char *argv[]){
+	//Read args for starting the construction
+	read_args(argc,argv);
 	string buf;
 	if(!input_file){
 		cout << "Give the path of dataset file" << endl;
@@ -157,7 +162,8 @@ int main(int argc,char *argv[]){
 		hash_function = (char *)malloc(buf.size()+1);
 		strcpy(hash_function,buf.c_str());
 	}
-	LSH_Curve< std::vector< std::vector<double> > ,std::vector<double>, Curve<  std::vector< std::vector<double> >, std::vector<double> > > **LSH;
+
+	//Select the hash_function which we will use
 	int (*function)(const std::vector<double> &,const std::vector<int> &,int,int,std::vector<double> **,double *);
 	if(!strcmp(hash_function,"classic")){
 		function = &classic_function;
@@ -166,10 +172,15 @@ int main(int argc,char *argv[]){
 		function = &probabilistic;
 		k_vec = 3;
 	}
+
+	//Store the id and the curve in arrays to use them if we will have created the statistics
 	char ** Array_of_Id;
 	std::vector< std::vector<double> > ** Array_of_Curves;
+	//Read curves and constuct the LSH for Curves
+	LSH_Curve< std::vector< std::vector<double> > ,std::vector<double>, Curve<  std::vector< std::vector<double> >, std::vector<double> > > **LSH;
 	LSH = read_curves< std::vector< std::vector<double> >,std::vector<double> >(input_file,function,&Array_of_Id,&Array_of_Curves);
 
+	//Read query file and output file if these were not given it on command line
 	if(!query_file){
 		cout << "Give the path of query_file" << endl;
 		cin >> buf;
@@ -182,11 +193,17 @@ int main(int argc,char *argv[]){
 		output_file = (char *)malloc(buf.size()+1);
 		strcpy(output_file,buf.c_str());
 	}
+
+	//Create a output file if not exists or truncate it
 	ofstream out_file (output_file,std::ofstream::out | std::ofstream::trunc);
 	if(out_file.is_open()){
 		out_file.close();
 	}
+
+	//Now its time to search for the nearest curves
 	LSH = search_curves(query_file,output_file,LSH,Array_of_Id,Array_of_Curves,function);
+
+	//Reapet the search for different query files
 	while(1){
 		char f;
 		do{
@@ -205,6 +222,8 @@ int main(int argc,char *argv[]){
 		strcpy(query_file,buf.c_str());
 		LSH = search_curves(query_file,output_file,LSH,Array_of_Id,Array_of_Curves,function);
 	}
+
+	//Destroy the structures before exit to avoid memory leaks
 	for(int i=0;i<n;i++){
 		if(Array_of_Id[i] != NULL){
 			free(Array_of_Id[i]);
@@ -215,6 +234,7 @@ int main(int argc,char *argv[]){
 	}
 	free(Array_of_Id);
 	delete[] Array_of_Curves;
+
 	for(int i=0;i<L;i++){
 		delete LSH[i];
 	}

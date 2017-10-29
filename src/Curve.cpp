@@ -1,4 +1,4 @@
-#include "Curve.h"
+#include "../include/Curve.h"
 #include <iostream>
 #include <vector>
 #include <string.h>

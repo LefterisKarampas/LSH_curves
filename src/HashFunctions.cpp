@@ -1,9 +1,9 @@
-#include "HashFunctions.h"
+#include "../include/HashFunctions.h"
 #include <iostream>
 #include <vector>
 #include <cmath>
 #include <climits>
-#include "generator.h"
+#include "../include/generator.h"
 
 #define w 4
 
