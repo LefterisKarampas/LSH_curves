@@ -3,11 +3,14 @@
 #include "../include/Node.h"
 
 
-//Node Functions
+//---------------------------Node Functions------------------------------
+//
 template<typename Type>
 Node<Type>::Node(Type * x):value(x){
 	this->next = NULL;
-};
+}
+
+
 
 template<typename Type>
 Node<Type>::~Node(){
@@ -18,6 +21,8 @@ Node<Type>::~Node(){
 	}
 }
 
+
+
 template<typename Type>
 int Node<Type>::Set_next(Node<Type> * next){
 	this->next = next;
@@ -25,20 +30,28 @@ int Node<Type>::Set_next(Node<Type> * next){
 }
 
 
+
+
 template <typename  Type>
 Node<Type> * Node<Type>::GetNext(){
 	return this->next;
-};
+}
+
+
 
 template <typename Type>
 Type * Node<Type>::GetValue(){
 	return this->value;
-};
+}
+
+
 
 template <typename Type>
 void Node<Type>::Clear_up(){
 	this->value->Clear_up();
-};
+}
+
+
 
 template <typename Type>
 void Node<Type>::Search_Clear(){

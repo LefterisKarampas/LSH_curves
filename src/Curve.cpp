@@ -8,16 +8,16 @@
 
 using namespace std;
 
-
+//Create a Curve object
 template <typename T_Curve,typename T_GridCurve>
 Curve<T_Curve,T_GridCurve>::Curve(T_Curve * curve_,T_GridCurve * grid_curve_,char *id_):curve(curve_),grid_curve(grid_curve_){
 	this->id = id_;
 }
 
 template <typename T_Curve,typename T_GridCurve>
-Curve<T_Curve,T_GridCurve>::~Curve(){
-	delete this->grid_curve;
-}
+Curve<T_Curve,T_GridCurve>::~Curve(){				//Delete Curve object
+	delete this->grid_curve;						//Delete only the grid_curve, id and curve maybe are used from other LSH HT
+}	
 
 
 template <typename T_Curve,typename T_GridCurve>
